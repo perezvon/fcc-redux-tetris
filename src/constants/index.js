@@ -1,0 +1,8 @@
+export const INCREMENT_SCORE = 'INCREMENT_SCORE'
+export const UPDATE_BOARD = 'UPDATE_BOARD'
+export const INCREMENT_TIMER = 'INCREMENT_TIMER'
+export const START_GAME = 'START_GAME'
+export const RESET_GAME = 'RESET_GAME'
+export const MOVE_LEFT = 'MOVE_LEFT'
+export const MOVE_RIGHT = 'MOVE_RIGHT'
+export const ROTATE = 'ROTATE'
