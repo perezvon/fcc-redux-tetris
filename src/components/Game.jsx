@@ -43,6 +43,7 @@ class Game extends React.Component {
   
   handleKeypress = e => {
     e.preventDefault();
+    const { pos, board } = this.props.game;
     switch (e.key) {
       case 'w':
       case 'ArrowUp':
@@ -51,15 +52,15 @@ class Game extends React.Component {
         break;
       case 'a':
       case 'ArrowLeft':
-        this.props.moveLeft()
+        if (pos[0] > 0 && !board[pos[1]][pos[0]-1]) this.props.moveLeft()
         break;
       case 's':
       case 'ArrowDown':
-        this.props.moveDown()
+        if (pos[1] < board.length - 1 && !board[pos[1]+1][pos[0]]) this.props.moveDown()
         break;
       case 'd':
       case 'ArrowRight':
-        this.props.moveRight()
+        if (pos[0] < board[0].length - 1  && !board[pos[1]][pos[0]+1]) this.props.moveRight()
         break;
       default: break;
     }
