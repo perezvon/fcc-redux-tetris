@@ -39,7 +39,7 @@ h1 {
   align-items: center;
   justify-content: center;
   border-radius: 5px;
-  box-shadow: 2px 2px 5px blue;
+  box-shadow: 1px 2px 5px white;
 }
 
 .button {

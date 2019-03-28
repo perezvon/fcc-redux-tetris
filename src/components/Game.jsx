@@ -17,11 +17,19 @@ const StartGame = ({startGame}) => (
 )
 
 class Game extends React.Component {
+  
+  componentDidMount() {
+    document.addEventListener('keydown', this.handleKeypress);
+  }
+  
   componentDidUpdate(prevProps) {
     let timer;
     if (this.props.game.playing !== prevProps.game.playing) {
       if (this.props.game.playing) {
-        timer = setInterval(() => this.props.incrementTimer(), 1000)
+        timer = setInterval(() => {
+          this.collisionCheck(this.props.game.pos);
+          this.props.incrementTimer();
+        }, 1000)
         this.doStartGame()
       }
       else clearInterval(timer);
@@ -30,11 +38,43 @@ class Game extends React.Component {
   
   doStartGame = () => {
     console.log('starting ye olde game')
-    this.props.updateBoard()
+    // this.props.updateBoard()
+  }
+  
+  handleKeypress = e => {
+    e.preventDefault();
+    switch (e.key) {
+      case 'w':
+      case 'ArrowUp':
+        // piecePos = [x, y - 1];
+        this.props.rotateBlock();
+        break;
+      case 'a':
+      case 'ArrowLeft':
+        this.props.moveLeft()
+        break;
+      case 's':
+      case 'ArrowDown':
+        this.props.moveDown()
+        break;
+      case 'd':
+      case 'ArrowRight':
+        this.props.moveRight()
+        break;
+      default: break;
+    }
+  }
+  
+  collisionCheck = pos => {
+    const { board } = this.props.game;
+    if (pos[1]+1 < board.length && board[pos[1] + 1][pos[0]] === 0) {
+      this.props.moveDown();
+    } else {
+      this.props.newPiece();
+    }
   }
   
   render() {
-    console.log(this.props)
     const { game, startGame } = this.props;
     const { score, board, playing } = game;
     const bgColor = '#b374db'
