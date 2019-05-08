@@ -6,12 +6,15 @@ import Controls from './Controls'
 import Scoreboard from './Scoreboard'
 import Block from './Block'
 
+const bgColors = ['#b374db', '#4ffff0', '#a856ff', '#ffad56', '#e0ff56']
+
 const mapStateToProps = state => {
   return {...state}
 }
 
 const StartGame = ({startGame}) => (
   <div className='start-game-modal'>
+    <h3>Welcome</h3>
     <button className='button' onClick={startGame}>start</button>
     </div>
 )
@@ -24,8 +27,8 @@ class Game extends React.Component {
   
   componentDidUpdate(prevProps) {
     let timer;
-    if (this.props.game.playing !== prevProps.game.playing) {
-      if (this.props.game.playing) {
+    if (this.props.game.status !== prevProps.game.status) {
+      if (this.props.game.status === 'playing') {
         timer = setInterval(() => {
           this.collisionCheck(this.props.game.pos);
           this.props.incrementTimer();
@@ -38,55 +41,59 @@ class Game extends React.Component {
   
   doStartGame = () => {
     console.log('starting ye olde game')
-    // this.props.updateBoard()
+    this.props.newPiece(this.props.game.board)
   }
   
   handleKeypress = e => {
-    e.preventDefault();
-    const { pos, board } = this.props.game;
     switch (e.key) {
       case 'w':
       case 'ArrowUp':
-        // piecePos = [x, y - 1];
-        this.props.rotateBlock();
+        e.preventDefault();
+        this.props.rotateBlock(this.props.game);
         break;
       case 'a':
       case 'ArrowLeft':
-        if (pos[0] > 0 && !board[pos[1]][pos[0]-1]) this.props.moveLeft()
+        e.preventDefault();
+        this.props.moveLeft(this.props.game)
         break;
       case 's':
       case 'ArrowDown':
-        if (pos[1] < board.length - 1 && !board[pos[1]+1][pos[0]]) this.props.moveDown()
+        e.preventDefault();
+        this.props.moveDown(this.props.game)
         break;
       case 'd':
       case 'ArrowRight':
-        if (pos[0] < board[0].length - 1  && !board[pos[1]][pos[0]+1]) this.props.moveRight()
+        e.preventDefault();
+        this.props.moveRight(this.props.game)
         break;
       default: break;
     }
   }
   
   collisionCheck = pos => {
-    const { board } = this.props.game;
-    if (pos[1]+1 < board.length && board[pos[1] + 1][pos[0]] === 0) {
-      this.props.moveDown();
-    } else {
-      this.props.newPiece();
+    const { board, currentPiece } = this.props.game;
+    if (pos[1] >= board.length - 1) return this.props.newPiece(board);
+    if (currentPiece) {
+      let doesCollide = currentPiece[currentPiece.length-1].some((b,i) => b && board[pos[1] + 1][pos[0]+i])
+      if (!doesCollide) {
+       this.props.moveDown(this.props.game);
+      } else {
+       this.props.newPiece(board);
+      }
     }
   }
   
   render() {
     const { game, startGame } = this.props;
-    const { score, board, playing } = game;
-    const bgColor = '#b374db'
+    const { score, board, status } = game;
     return (
       <>
-      <Scoreboard score={score} />
-      <div className='game-board'>
-        {board.map(row => <div className='board-row'>{row.map(block => block === 1 ? <Block styles={{background: bgColor, border: '1px solid white'}} /> : <Block />)}</div>)}
-      </div>
-      <Controls />
-      {!playing && <StartGame startGame={startGame} />}
+        <Scoreboard score={score} />
+        <div className='game-board'>
+          {board.map(row => <div className='board-row'>{row.map(block => block === 1 ? <Block styles={{background: bgColors[Math.floor(Math.random()*bgColors.length)], border: '1px solid white'}} /> : <Block />)}</div>)}
+        </div>
+        <Controls />
+        {(status  === 'new' || status === 'over') && <StartGame startGame={startGame} />}
       </>
     )
   }

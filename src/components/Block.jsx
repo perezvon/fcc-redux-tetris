@@ -5,7 +5,7 @@ const blockStyle = {
   height: '25px',
   border: '1px solid rgba(255,255,255,0.2)',
   background: 'transparent',
-  display: 'inline-block'
+  display: 'inline-block',
 }
 
 class Block extends React.Component {
